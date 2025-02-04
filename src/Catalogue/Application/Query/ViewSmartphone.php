@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalogue\Domain\Query;
+namespace App\Catalogue\Application\Query;
 
 final readonly class ViewSmartphone
 {

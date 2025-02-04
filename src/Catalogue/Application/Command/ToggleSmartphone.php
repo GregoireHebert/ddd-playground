@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalogue\Domain\Command;
+namespace App\Catalogue\Application\Command;
 
 final readonly class ToggleSmartphone
 {

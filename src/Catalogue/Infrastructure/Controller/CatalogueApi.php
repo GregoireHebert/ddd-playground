@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalogue\Infrastructure\Controller;
 
 use App\Catalogue\Application\ClassicSmartphoneService;
-use App\Catalogue\Domain\Command\AddSmartphone;
+use App\Catalogue\Application\Command\AddSmartphone;
 use App\Catalogue\Infrastructure\Persistence\Repository\SmartphoneRepository;
 use Ecotone\Modelling\CommandBus;
 use Ecotone\Modelling\QueryBus;
@@ -66,44 +66,6 @@ class CatalogueApi
         $this->commandBus->sendWithRouting(
             ClassicSmartphoneService::TOGGLE_SMARTPHONE,
             ["id" => $id]
-        );
-
-        $smartPhone = $this->queryBus->sendWithRouting(
-            ClassicSmartphoneService::VIEW_SMARTPHONE_FROM_CATALOGUE,
-            ["id" => $id]
-        );
-
-        // Pretend it's still a nice shiny DTO coming from API Platform Resource
-        return new JsonResponse($smartPhone, status: 201);
-    }
-
-    #[Route("/aggregate-method-cqs/smartphones", name: 'create_aggregate_smartphone', methods: ["POST"])]
-    public function newAggregateSmartphone(Request $request): Response
-    {
-        $smartphoneId = $this->repository->getNext();
-
-        $this->commandBus->sendWithRouting(
-            "catalogue.aggregate.createSmartphone",
-            // Pretend it's a nice shiny validated DTO coming from API Platform Resource
-            new AddSmartphone($smartphoneId, $request->get("label"))
-        );
-
-        $smartPhone = $this->queryBus->sendWithRouting(
-            ClassicSmartphoneService::VIEW_SMARTPHONE_FROM_CATALOGUE,
-            ["id" => $smartphoneId]
-        );
-
-        // Pretend it's still a nice shiny DTO coming from API Platform Resource
-        return new JsonResponse($smartPhone, status: 201);
-    }
-
-    #[Route("/aggregate-method-cqs/smartphones/{id}/rpc-toggle", name: 'aggregate_toggle_smartphone', methods: ["POST"])]
-    public function toggleAggregateSmartphone(string $id): Response
-    {
-        $this->commandBus->sendWithRouting(
-            "catalogue.aggregate.toggleSmartphone",
-            $id,
-            metadata: ["aggregate.id" => $id]
         );
 
         $smartPhone = $this->queryBus->sendWithRouting(

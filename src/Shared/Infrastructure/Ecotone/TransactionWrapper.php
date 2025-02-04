@@ -19,8 +19,9 @@ class TransactionWrapper
         try {
             $this->entityManager->beginTransaction();
 
-            $data = $methodInvocation->proceed();
-            $this->entityManager->persist($data);
+            if ((null !== $data = $methodInvocation->proceed()) && !$this->entityManager->contains($data)) {
+                $this->entityManager->persist($data);
+            }
 
             $this->entityManager->flush();
             $this->entityManager->commit();

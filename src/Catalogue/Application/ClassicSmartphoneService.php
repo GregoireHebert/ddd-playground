@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalogue\Application;
 
-use App\Catalogue\Domain\Command\AddSmartphone;
-use App\Catalogue\Domain\Query\ViewSmartphone;
+use App\Catalogue\Application\Command\AddSmartphone;
+use App\Catalogue\Application\Query\ViewSmartphone;
 use App\Catalogue\Domain\Models\Smartphone;
 use App\Catalogue\Infrastructure\Persistence\Repository\SmartphoneRepository;
 use Ecotone\Modelling\Attribute\CommandHandler;
@@ -24,14 +24,12 @@ final readonly class ClassicSmartphoneService
     }
 
     #[CommandHandler(self::ADD_SMARTPHONE_TO_CATALOGUE)]
-    public function addToCatalogue(AddSmartphone $command): void
+    public function addToCatalogue(AddSmartphone $command): Smartphone
     {
-        $smartphone = Smartphone::fromClassicApplication(
+        return Smartphone::fromClassicApplication(
             $command->id ?: Uuid::uuid4()->toString(),
             $command->label
         );
-
-        $this->repository->save($smartphone);
     }
 
     #[QueryHandler(self::VIEW_SMARTPHONE_FROM_CATALOGUE)]
@@ -46,7 +44,7 @@ final readonly class ClassicSmartphoneService
     }
 
     #[CommandHandler(self::TOGGLE_SMARTPHONE)]
-    public function toggleSmartphone(ViewSmartphone $query): Smartphone
+    public function toggleSmartphone(ViewSmartphone $query): void
     {
         if (null === $smartphone = $this->repository->get($query->id)) {
             // pretend it's handled nicely
@@ -54,8 +52,5 @@ final readonly class ClassicSmartphoneService
         }
 
         $smartphone->toggle();
-        $this->repository->flush();
-
-        return $smartphone;
     }
 }
