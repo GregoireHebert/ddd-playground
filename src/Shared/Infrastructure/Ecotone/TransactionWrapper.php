@@ -19,7 +19,8 @@ class TransactionWrapper
         try {
             $this->entityManager->beginTransaction();
 
-            $methodInvocation->proceed();
+            $data = $methodInvocation->proceed();
+            $this->entityManager->persist($data);
 
             $this->entityManager->flush();
             $this->entityManager->commit();
