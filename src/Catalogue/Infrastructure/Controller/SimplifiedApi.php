@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalogue\Infrastructure\Controller;
 
-use App\Catalogue\Application\ClassicSmartphoneService;
-use App\Catalogue\Infrastructure\Persistence\Repository\SmartphoneRepository;
+use App\Catalogue\Application\SimplifiedEntityService;
+use App\Catalogue\Infrastructure\Persistence\Repository\SimplifiedEntityRepository;
 use Ecotone\Modelling\CommandBus;
 use Ecotone\Modelling\QueryBus;
 use Ramsey\Uuid\Rfc4122\UuidV7;
@@ -17,62 +17,62 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 #[Route('/catalogue', name: 'catalogue_')]
-class CatalogueApi
+class SimplifiedApi
 {
     public function __construct(
         private readonly CommandBus $commandBus,
         private readonly QueryBus $queryBus,
-        private readonly SmartphoneRepository $repository,
+        private readonly SimplifiedEntityRepository $repository,
     )
     {
     }
 
-    #[Route("/classic-service-cqs/smartphones", name: 'create_smartphone', methods: ["POST"])]
+    #[Route("/classic-service-cqs/simplified", name: 'create_entity', methods: ["POST"])]
     public function newSmartphone(Request $request): Response
     {
-        $smartphoneId = $this->repository->getNext();
+        $entityId = $this->repository->getNext();
 
         $this->commandBus->sendWithRouting(
-            ClassicSmartphoneService::ADD_SMARTPHONE_TO_CATALOGUE,
+            SimplifiedEntityService::ADD_ENTITY_TO_CATALOGUE,
             // Pretend it's a nice shiny validated DTO coming from API Platform Resource
-            $request->request->all()  + ["id" => $smartphoneId]
+            $request->request->all()  + ["id" => $entityId]
         );
 
-        $smartPhone = $this->queryBus->sendWithRouting(
-            ClassicSmartphoneService::VIEW_SMARTPHONE_FROM_CATALOGUE,
-            ["id" => $smartphoneId]
+        $domainEntity = $this->queryBus->sendWithRouting(
+            SimplifiedEntityService::VIEW_ENTITY_FROM_CATALOGUE,
+            ["id" => $entityId]
         );
 
         // Pretend it's still a nice shiny DTO coming from API Platform Resource
-        return new JsonResponse($smartPhone, status: 201);
+        return new JsonResponse($domainEntity, status: 201);
     }
 
-    #[Route("/classic-service-cqs/smartphones/{id}", name: 'read_smartphone', methods: ["GET"])]
-    public function viewSmartphone(string $id): Response
+    #[Route("/classic-service-cqs/simplified/{id}", name: 'read_entity', methods: ["GET"])]
+    public function viewEntity(string $id): Response
     {
-        $smartPhone = $this->queryBus->sendWithRouting(
-            ClassicSmartphoneService::VIEW_SMARTPHONE_FROM_CATALOGUE,
+        $domainEntity = $this->queryBus->sendWithRouting(
+            SimplifiedEntityService::VIEW_ENTITY_FROM_CATALOGUE,
             ["id" => UuidV7::fromString($id)]
         );
 
         // Pretend it's still a nice shiny DTO coming from API Platform Resource
-        return new JsonResponse($smartPhone, status: 200);
+        return new JsonResponse($domainEntity, status: 200);
     }
 
     #[Route("/classic-service-cqs/smartphones/{id}/rpc-toggle", name: 'toggle_smartphone', methods: ["POST"])]
     public function toggleSmartphone(string $id): Response
     {
         $this->commandBus->sendWithRouting(
-            ClassicSmartphoneService::TOGGLE_SMARTPHONE,
+            SimplifiedEntityService::TOGGLE_ENTITY,
             ["id" => $id]
         );
 
-        $smartPhone = $this->queryBus->sendWithRouting(
-            ClassicSmartphoneService::VIEW_SMARTPHONE_FROM_CATALOGUE,
+        $domainEntity = $this->queryBus->sendWithRouting(
+            SimplifiedEntityService::VIEW_ENTITY_FROM_CATALOGUE,
             ["id" => $id]
         );
 
         // Pretend it's still a nice shiny DTO coming from API Platform Resource
-        return new JsonResponse($smartPhone, status: 200);
+        return new JsonResponse($domainEntity, status: 200);
     }
 }

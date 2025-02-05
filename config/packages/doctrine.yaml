@@ -21,9 +21,15 @@ doctrine:
             Catalogue:
                 type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/src/Catalogue/Infrastructure/Persistence/Doctrine/ORM/Mapping'
+                dir: '%kernel.project_dir%/src/Catalogue/Infrastructure/Persistence/Doctrine/ORM/DirectMapping'
                 prefix: 'App\Catalogue\Domain\Models'
                 alias: Catalogue
+            Complex:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Catalogue/Infrastructure/Persistence/Doctrine/ORM/ManualMapping'
+                prefix: 'App\Catalogue\Infrastructure\Persistence\Doctrine\ORM\Entity'
+                alias: Complex
         controller_resolver:
             auto_mapping: false
 
