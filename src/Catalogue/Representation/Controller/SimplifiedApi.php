@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalogue\Infrastructure\Controller;
+namespace App\Catalogue\Representation\Controller;
 
 use App\Catalogue\Application\SimplifiedEntityService;
 use App\Catalogue\Infrastructure\Persistence\Repository\SimplifiedEntityRepository;
