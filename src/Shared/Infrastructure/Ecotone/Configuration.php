@@ -8,6 +8,17 @@ use Ecotone\Dbal\Configuration\DbalConfiguration;
 use Ecotone\Messaging\Attribute\ServiceContext;
 use Ecotone\SymfonyBundle\Config\SymfonyConnectionReference;
 
+/**
+ * Configure Ecotone.
+ *
+ * 1. Using Doctrine and repositories.
+ * This allows a domain to map handlers directly to aggregate root, load it thanks to the identifier configuration,
+ * for not complex operations that do not need domain services, nor application services.
+ *
+ * @link https://docs.ecotone.tech/modules/symfony/doctrine-orm
+ *
+ * @author Grégoire Hébert <contact@gheb.dev>
+ */
 class Configuration
 {
     #[ServiceContext]
